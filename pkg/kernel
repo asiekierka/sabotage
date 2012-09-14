@@ -1,29 +1,45 @@
 [deps]
 binutils
 make
-sed
 gcc4
 xz
 
 [main]
-filesize=76753134
-sha512=4a87bba5f62945d226d8c0059d38e6354ad8cd379b8d7936f934a3868a69c6a4c724aad56d974966e8ef1de45f1e0bbe628cb15fc568b6f8cfc63dbc8104bc9d
+filesize=78955853
+sha512=94e2ed2165ce501d76c4947fa94288e0f8451092ca3a8360a1d34d8760a0304bbec00285bcde02b4a07aed698c7c78403f4cf82e2812154bbdb6dabd134dde34
 
 [mirrors]
-http://www.kernel.org/pub/linux/kernel/v3.0/linux-3.0.tar.bz2
-http://kambing.ui.ac.id/linux/v3.0/linux-3.0.tar.bz2
-http://mirror.switch.ch/ftp/mirror/gentoo/distfiles/linux-3.0.tar.bz2
+http://www.kernel.org/pub/linux/kernel/v3.0/linux-3.3.4.tar.bz2
+http://kambing.ui.ac.id/linux/v3.0/linux-3.3.4.tar.bz2
 
 [build]
+# get into menuconfig using
+# make HOSTCFLAGS="-D_GNU_SOURCE" HOSTLDFLAGS=-lncurses menuconfig
 
-#apply a header patch needed for busybox
-patch -p1 < $K/linux-ubi.patch || exit 1
-cat $K/linux-noperl-capflags.patch $K/linux-noperl-headers.patch \
-    $K/linux-noperl-timeconst.patch $K/linux-posix-sed.patch | patch -p1 || exit 1
+dopatch() {
+	echo "applying patch $1"
+	patch -p1 < "$1" || (echo "patch failed!"; exit 1)
+}
 
-cat $K/linux-arm.patch $K/linux-bootraw.patch \
-    $K/linux-fixsh4.patch $K/linux-mips64fix.patch \
-    $K/linux-pmacorder.patch | patch -p1 || exit 1
+#this patch seems to come from chneukirchen original sabotage
+dopatch $K/linux-posix-sed.patch
+
+#noperl and qemu patches from landley.net/aboriginal
+dopatch $K/linux-noperl-capflags.patch 
+dopatch $K/linux-noperl-headers.patch
+dopatch $K/linux-noperl-timeconst.patch
+dopatch $K/linux-arm.patch 
+dopatch $K/linux-bootraw.patch
+dopatch $K/linux-fixsh4.patch 
+dopatch $K/linux-mips64fix.patch
+dopatch $K/linux-pmacorder.patch
+dopatch $K/linux-fixubi.patch
+# fix the broken "ncurses detector" which fails, and even worse removes our HOSTLDFLAGS
+dopatch $K/linux-menuconfig.patch
+
+#grsecurity and pax
+#dopatch $K/pax-linux-3.3.4-test9.patch
+dopatch $K/grsecurity-2.9-3.3.4-201204272006.patch
 
 export ARCH=$A
 linux_config="$K/linux.config"
@@ -39,21 +55,27 @@ fi
 
 cat $linux_config > my.config
 
-make allnoconfig HOSTCFLAGS="-D_GNU_SOURCE" KCONFIG_ALLCONFIG=my.config || exit 1
+make allnoconfig HOSTCFLAGS="-D_GNU_SOURCE" KCONFIG_ALLCONFIG=my.config DISABLE_PAX_PLUGINS=y || exit 1
 
-make ARCH=$A HOSTCFLAGS=-D_GNU_SOURCE INSTALL_HDR_PATH=dest headers_install || exit 1
+make ARCH=$A HOSTCFLAGS=-D_GNU_SOURCE INSTALL_HDR_PATH=dest DISABLE_PAX_PLUGINS=y headers_install || exit 1
 find dest/include \( -name .install -o -name ..install.cmd \) -delete
 # musl installs its own include/linux. If that gets symlinked by
 # relocate_toolchain, then we're in trouble. Use rm -f (not -r) to remove it if
 # and only if it's a link, and ignore it otherwise.
 rm -f $R/include/linux
 cp -rv dest/include/* $R/include/
+#fix ext2 header...
+cp -f $K/ext2_fs.h $R/include/linux/
+
+# usually when using an ARM system you dont want to build a generic kernel
+# you have to use a heavily patched vendor specific one
+if [ ! "$A" = "arm" ] ; then
 
 #let make create dependencies, otherwise parallel build wont work
-make CC="$CC" HOSTCC="$HOSTCC" ARCH=$A HOSTCFLAGS=-D_GNU_SOURCE dep || exit 1
+make CC="$CC" HOSTCC="$HOSTCC" ARCH=$A HOSTCFLAGS=-D_GNU_SOURCE DISABLE_PAX_PLUGINS=y dep || exit 1
 
-make -j$MAKE_THREADS CC="$CC" V=1 ARCH=$A HOSTCC="$HOSTCC" HOSTCFLAGS=-D_GNU_SOURCE || exit 1
-make INSTALL_MOD_PATH=$R modules_install || exit 1
+make -j$MAKE_THREADS CC="$CC" V=1 ARCH=$A HOSTCC="$HOSTCC" HOSTCFLAGS=-D_GNU_SOURCE DISABLE_PAX_PLUGINS=y || exit 1
+make INSTALL_MOD_PATH=$R DISABLE_PAX_PLUGINS=y modules_install || exit 1
 
 mkdir -p $R/boot $R/lib/modules $R/lib/firmware
 cp System.map $R/boot/
@@ -65,3 +87,6 @@ else
 fi
 cp $kpath $R/boot/vmlinuz
 
+fi
+
+exit 0

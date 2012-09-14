@@ -12,6 +12,6 @@ sha512=d459dc2b8e38ed46eb45075306edbe2cb5a927823944a693e44cb7ab63ed0c10a8a04aa46
 http://xorg.freedesktop.org/releases/individual/app/xauth-1.0.5.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS="-D_GNU_SOURCE -D_BSD_SOURCE" ./configure -C --prefix="$butch_prefix" || exit 1
 make LIBS="-lX11 -lxcb -lXau -lXdmcp" -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

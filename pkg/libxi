@@ -10,6 +10,6 @@ sha512=166450e06d97c6e0b3d043d757002d5152db97f2ed3472af530527ca249086b35faf148a8
 ftp://ftp.x.org/pub/individual/lib/libXi-1.4.2.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

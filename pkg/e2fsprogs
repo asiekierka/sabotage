@@ -1,6 +1,6 @@
 [deps]
-pkg-config
-kernel
+pkgconf
+kernel-headers
 
 [main]
 filesize=4512157
@@ -11,7 +11,9 @@ http://prdownloads.sourceforge.net/e2fsprogs/e2fsprogs-1.41.14.tar.gz
 
 [build]
 patch -p1 < $K/e2fsprogs-nonx86.patch || exit 1
-CC="$CC -static -L$R/lib -I$R/include -fgnu89-inline" ./configure --prefix=/ --with-root-prefix="" --sbindir=/bin --disable-nls --disable-tls || exit 1
+CC="$CC -static -DHAVE_LSEEK64 -DHAVE_LSEEK64_PROTOTYPE -Dlseek64=lseek -L$R/lib -I$R/include -fgnu89-inline" \
+  ./configure -C --prefix="$butch_prefix" --with-root-prefix="$butch_prefix" \
+  --sbindir="$butch_prefix"/bin --disable-nls --disable-tls || exit 1
 sed -i 's:sys/signal.h:signal.h:' misc/fsck.c
 make -j$MAKE_THREADS V=1 CFLAGS="-D_GNU_SOURCE -include math.h -Dopen64=open" || exit 1
 # dont fail because of makeinfo

@@ -1,16 +1,22 @@
 [main]
-filesize=59666
-sha512=66341b849c840056a251c7718779237b612d0420bf1348879113db16a5fcf2be5ee5eb991a63e45e1f4cb2fa97b55f28ee73518372301ddc6df2234dd5075c1f
+filesize=62924
+sha512=61552086768fe81462566af09c9d42f6c20d546a18a9ef12ad68aa486a4c9bb0be16048686c86cbb6f9bf9ce71bbc948a8866ba7b3fa216c0f09090312c6c881
 tardir=butch
 
 [deps]
 stage0_musl
 
 [mirrors]
-https://github.com/downloads/rofl0r/butch/butch-0.0.9.tar.bz2
-http://codu.org/~rofl/butch-0.0.9.tar.bz2
-http://mirror.wzff.de/butch/butch-0.0.9.tar.bz2
+https://github.com/downloads/rofl0r/butch/butch-0.1.2.tar.bz2
+http://codu.org/~rofl/butch-0.1.2.tar.bz2
+http://mirror.wzff.de/butch/butch-0.1.2.tar.bz2
 
 [build]
+# set environment variable BUTCH_FROM_GIT to 1 if you want to test the latest butch
+if [ ! -z "$BUTCH_FROM_GIT" ] ; then
+	rm -rf butch
+	git clone https://github.com/rofl0r/butch
+fi
+echo "CFLAGS=-O0 -g" > lib/config.mak
 CC="$R/bin/musl-gcc -static" ./build.sh
 cp butch/butch $R/bin/butch

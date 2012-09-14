@@ -6,6 +6,9 @@ echo sabotage booting
 mount -t proc proc /proc
 mount -t sysfs sysfs /sys
 
+echo /bin/mdev > /proc/sys/kernel/hotplug
+mdev -s
+
 # only show warning or worse on console
 grep -q " verbose" /proc/cmdline && dmesg -n 8 || dmesg -n 3
 
@@ -27,4 +30,6 @@ dd if=/dev/urandom of=/etc/random-seed count=1 bs=512 2>/dev/null
 
 dmesg >/var/log/dmesg.log
 
-[ -x /etc/rc.local ] && /etc/rc.local
+for i in /etc/rc.modules /etc/rc.local ; do
+	[ -x "$i" ] && "$i"
+done

@@ -1,0 +1,46 @@
+[deps]
+g++
+relocate_toolchain
+
+[main]
+filesize=6475820
+sha512=7b84a57080befa90dc811f0c90efe70774886d33483694f4eb888b65b510c5c5663cdace88b1d0bd96336b4d59c9910a27acae1432821c451fa05b244224f240
+tardir=gcc-4.5.3
+
+[mirrors]
+ftp://gd.tuwien.ac.at/gnu/gcc/releases/gcc-4.5.3/gcc-g++-4.5.3.tar.bz2
+http://gcc.cybermirror.org//releases/gcc-4.5.3/gcc-g++-4.5.3.tar.bz2
+http://gcc-uk.internet.bs/releases/gcc-4.5.3/gcc-g++-4.5.3.tar.bz2
+http://www.netgull.com/gcc/releases/gcc-4.5.3/gcc-g++-4.5.3.tar.bz2
+
+[build]
+dir=$PWD
+cd ..
+tar xf $C/gcc-core-4.5.3.tar.bz2
+cd $dir
+
+#more g++ hackery
+sed -i 's,# include <syscall.h>,#include <sys/syscall.h>,' ./libstdc++-v3/libsupc++/guard.cc
+#sed -i 's,# define _GLIBCXX_USE_FUTEX,,' ./libstdc++-v3/libsupc++/guard.cc
+
+#todo check if this isnt to intrusive
+sed -i 's,gcc_no_link=yes,gcc_no_link=no,' ./libstdc++-v3/configure
+
+#and even more g++ hackery
+mv ./libstdc\+\+-v3/config/os/gnu-linux ./libstdc\+\+-v3/config/os/gnu-linux.org
+cp -r ./libstdc\+\+-v3/config/os/generic ./libstdc\+\+-v3/config/os/gnu-linux
+#g++ hackery done
+
+mkdir -p 1/2
+cd 1/2
+../../libstdc++-v3/configure -C || exit 1
+
+sed -i 's,_GLIBCXX_USE_C99_FENV_TR1,0,' ../../libstdc++-v3/include/tr1_impl/cfenv || exit 1
+
+make -j$MAKE_THREADS || exit 1
+
+find . -name 'libstdc++.so*' -exec cp -f "{}" /opt/toolchain/lib/ \;
+for i in /opt/toolchain/lib/libstdc++.so* ; do
+	ln -sf "..${i}" $R/lib/
+done
+#g++ -I /include/c+\+/4.5.3/ -L/lib test.cc

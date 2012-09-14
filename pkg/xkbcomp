@@ -10,6 +10,6 @@ sha512=cdb6c643b4f1eac828e8da8be5e8293deab883de0318e337d356af14bbc6240c86359dc79
 ftp://ftp.x.org/pub/individual/app/xkbcomp-1.2.1.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make LIBS="-lX11 -lxcb -lXau -lXdmcp" || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

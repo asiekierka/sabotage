@@ -6,5 +6,5 @@ sha512=2cfda53ec8a69a356e06c027086010a040279a0c3ce214c961aed5de6a32933306ed445c7
 http://xorg.freedesktop.org/releases/individual/util/util-macros-1.13.0.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1

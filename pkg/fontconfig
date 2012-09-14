@@ -1,6 +1,6 @@
 [deps]
 freetype
-pkg-config
+pkgconf
 expat
 
 [main]
@@ -11,6 +11,6 @@ sha512=a110e72cc631f1e374324a02f6ba9526b89a547cafe2ae27b9913938b19018843b2940084
 http://www.freedesktop.org/software/fontconfig/release/fontconfig-2.8.0.tar.gz
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

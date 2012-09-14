@@ -1,0 +1,20 @@
+[mirrors]
+http://openbox.org/dist/openbox/openbox-3.5.0.tar.gz
+[main]
+filesize=911834
+sha512=208d2641e171eca5fae0a2104a9b3c6d685293b4d66a18c0c2900df267453911b8738ef239fd84656b41440a0568279de67b9af798a6457b7716b1aab14704b5
+
+[deps]
+libx11
+libxext
+glib
+libxml2
+pkgconf
+pango
+
+[build]
+patch -p1 < "$K/openbox-git.patch"
+CFLAGS=-D_GNU_SOURCE LDFLAGS=-lXext ./configure -C \
+  --prefix="$butch_prefix" --disable-nls || exit 1
+make -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1

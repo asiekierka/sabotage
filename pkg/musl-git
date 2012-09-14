@@ -1,0 +1,35 @@
+[deps]
+relocate_toolchain
+git
+
+[build]
+dest="$S/build/"
+if [ -d "$dest/musl-git" ] ; then
+	cd "$dest/musl-git"
+	git pull || exit 1
+else
+	mkdir -p "$dest"
+	cd "$dest"
+	git clone git://git.etalabs.net/musl musl-git || exit 1
+	cd musl-git
+fi
+
+cp "$K/musl.config.mak" config.mak
+sed -i "s,#BUTCH_PREFIX#,$butch_prefix," config.mak
+
+# enable debug libc when DEBUGBUILD is set
+[ ! -z "$DEBUGBUILD" ] && echo "CFLAGS += -O0 -g" >> config.mak
+[ ! -z "$DEBUGBUILD" ] && echo "CFLAGS_ALL_SHARED += -O0 -g" >> config.mak
+
+TC_PATH=$R/opt/toolchain
+
+make clean
+make CC="rawcc" -j$MAKE_THREADS || exit 1
+make DESTDIR="$TC_PATH" install || exit 1
+
+musl_gcc="$TC_PATH/bin/musl-gcc"
+
+cp "$K/musl-gcc" "$musl_gcc"
+chmod +x "$musl_gcc"
+sed -i "s,AAAA,$A," "$musl_gcc"
+sed -i "s,PPPP,$R," "$musl_gcc"

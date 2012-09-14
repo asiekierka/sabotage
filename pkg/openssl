@@ -1,20 +1,21 @@
 [deps]
 perl
+patch
 
 [main]
-filesize=4025484
-sha512=c273e884ad8d342c334c3a25dc63a790061e23e0df0c240e57c09535f49ce3da0d061792473b6953ca06c9e868832e108935ceb9512381cff1e4a58e7c0704af
+filesize=4453920
+sha512=e09890e99cb1740303e7b57af91c90894c41734ad656d385b57b3d1f00968dfed2aa52f1c1e4f0417deb6ec02463627c7b0ef607f92f1dc3ff7855d9cada826e
 
 [mirrors]
-http://www.openssl.org/source/openssl-1.0.0d.tar.gz
+http://www.openssl.org/source/openssl-1.0.1.tar.gz
 
 [build]
-
-sed -i '/^"linux-x86_64/s/-DTERMIO/-DTERMIOS/' Configure
-sed -i '/^"linux-elf/s/-DTERMIO/-DTERMIOS/' Configure
+patch -p1 < "$K/openssl-1.0.1-parallel-build.patch" || exit 1
+sed -i 's/-DTERMIO/-DTERMIOS/g' Configure
 sed -i 's/defined(linux)/0/' crypto/ui/ui_openssl.c
-./config --prefix=/ --openssldir=/etc/ssl --libdir=lib no-shared no-dso zlib enable-md2 -Wa,--noexecstack
+./config --prefix="$butch_prefix" --openssldir="$butch_prefix"/etc/ssl --libdir="$butch_prefix"/lib \
+  no-shared no-dso zlib enable-md2 -D_GNU_SOURCE -Wa,--noexecstack
 touch include/memory.h
-make -j1 depend || exit 1
-make -j1 all || exit 1
-make -j1 INSTALL_PREFIX=$R MANDIR=/share/man install || exit 1
+make -j$MAKE_THREADS depend || exit 1
+make -j$MAKE_THREADS all || exit 1
+make -j$MAKE_THREADS INSTALL_PREFIX="$butch_install_dir" MANDIR="$butch_install_dir/share/man" install || exit 1

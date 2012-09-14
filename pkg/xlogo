@@ -13,6 +13,6 @@ sha512=10f91015c0c2f57dfe854906774d3ff7c015690de613c1ccefdd63e430753843dd5b5aac7
 http://xorg.freedesktop.org/releases/individual/app/xlogo-1.0.3.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make LIBS="-lfontconfig -lXft -lexpat -lfreetype -lz -lxcb -lXau -lXdmcp -lSM -lXpm -lX11 -lXrender" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1

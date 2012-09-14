@@ -6,6 +6,6 @@ sha512=ec2194c9bcad3f0f3eb3e9298792272213aa032ae9d6c00dcad567f31d7278a8c676fc67f
 ftp://ftp.x.org/pub/individual/proto/xineramaproto-1.2.1.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1
 

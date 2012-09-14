@@ -1,5 +1,6 @@
 [deps]
 ncurses
+sabotage-utils
 
 [main]
 filesize=307308
@@ -9,6 +10,9 @@ sha512=a701392b8ee6f30e08ab7a3250f1c8592dad9bd0453c758e457335309860a3f2837efa172
 http://www.greenwoodsoftware.com/less/less-444.tar.gz
 
 [build]
-./configure --prefix=/ || exit 1
+#configure is missing some includes... which lead to implicit declarations
+patch -p1 < "$K/less.patch"
+
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

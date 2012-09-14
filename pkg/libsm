@@ -9,6 +9,6 @@ sha512=09fd78a060d4527ae2dcd9458bbb23d9b57d9cbf1bad61a5fcfe7d16436d074cbe3bb6d70
 ftp://ftp.x.org/pub/individual/lib/libSM-1.2.0.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

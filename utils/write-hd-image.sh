@@ -7,7 +7,8 @@ echo_bold() {
 }
 
 usage() {
-	echo_bold "Usage: $0 <img file> <directory or tarball of content> <img size> [--clear-builds|--copy-tarballs]"
+	echo_bold "Usage: $0 <img file> <directory or tarball of content> <img size> [options]"
+	echo "options: --clear-builds --copy-tarballs"
 	echo
 	echo "--clear-builds will remove stuff in /src/build (butch 0.0.8+ build directory)"
 	echo '--copy-tarballs will copy tarballs from directory pointed to by "C" env var'
@@ -37,17 +38,25 @@ check_opts() {
 	while [ ! -z "$1" ] ; do
 		case $1 in
 			--clear-builds)
+				echo "clear_builds selected"
 				clear_builds=1;;
 			--copy-tarballs)
+				echo "copy_tarballs selected"
 				copy_tarballs=1;;
 		esac
 		shift
 	done
 }
 
+run_echo() {
+	printf "%s\n", "$@"
+	"$@"
+}
+
 mountdir=
 
 which extlinux 2>&1 > /dev/null || die 'extlinux must be in PATH (try installing syslinux)'
+[ -z "$UID" ] && UID=`id -u`
 [ "$UID" = "0" ] || die "must be root"
 
 imagefile="$1"
@@ -55,6 +64,7 @@ imagefile="$1"
 
 contents="$2"
 [ -z "$contents" ] && usage
+[ ! -f "$contents" ] && [ ! -d "$contents" ] && die "failed to access $contents"
 
 imagesize="$3"
 [ -z "$imagesize" ] && usage
@@ -68,7 +78,7 @@ for mbr_bin in mbr.bin /usr/lib/syslinux/mbr.bin /usr/share/syslinux/mbr.bin
 [ -z "$mbr_bin" ] && die 'Could not find mbr.bin'
 
 echo_bold "1) make the image file"
-dd if=/dev/zero of="$imagefile" bs=1 count=1 seek="$imagesize" || die "Failed to create $imagefile"
+dd if=/dev/zero of="$imagefile" bs=1 count=0 seek="$imagesize" || die "Failed to create $imagefile"
 
 echo_bold "2) fdisk"
 echo 'n
@@ -95,8 +105,11 @@ dd conv=notrunc if="$mbr_bin" of="$imagefile" || die 'Failed to set up MBR'
 echo_bold '4) /boot'
 loopdev=`losetup -f`
 mountdir="/tmp/mnt.$$"
-losetup -o $part1_start --sizelimit $part1_size "$loopdev" "$imagefile" || die 'Failed to losetup for /boot'
-mkdir -p "$mountdir" || die_unloop 'Failed to make '"$mountdir"
+
+echo_bold "info: mounting $imagefile as $loopdev on $mountdir"
+
+run_echo losetup -o $part1_start --sizelimit $part1_size "$loopdev" "$imagefile" || die 'Failed to losetup for /boot'
+mkdir -p "$mountdir" || die_unloop 'Failed to create '"$mountdir"
 mkfs.ext3 "$loopdev" || die_unloop 'Failed to mkfs.ext3 loop for /boot'
 mount "$loopdev" "$mountdir" || die_unloop 'Failed to mount loop for /boot'
 
@@ -115,17 +128,29 @@ losetup -d "$loopdev"
 
 echo_bold ' 5) /'
 loopdev=`losetup -f`
-losetup -o $part2_start "$loopdev" "$imagefile" || die 'Failed to losetup for /'
+run_echo losetup -o $part2_start "$loopdev" "$imagefile" || die 'Failed to losetup for /'
 mkfs.ext3 "$loopdev" || die_unloop 'Failed to mkfs.ext3 loop for /'
 mount "$loopdev" "$mountdir" || die_unloop 'Failed to mount loop for /'
 
 echo_bold "copying contents, this will take a while"
 if [ -d "$contents" ]
 then
-	[ "$clear_builds" = "1" ] && rm -rf "$mountdir/src/build/*"
-	[ "$copy_tarballs" = "1" ] && cp -f "$C/*" "$mountdir/src/tarballs/"
+	if [ "$clear_builds" = "1" ] ; then
+		echo -ne "clearing builds..."
+		[ -d "$contents/src/build" ] && rm -rf "$contents/src/build"
+		mkdir -p "$contents/src/build"
+		echo "done"
+	fi
+	if [ "$copy_tarballs" = "1" ] ; then
+		echo -ne "copying tarballs..."
+		mkdir -p "$mountdir/src/tarballs/"
+		cp -f "$C/"* "$mountdir/src/tarballs/"
+		echo "done"
+	fi
 
 	time cp -a "$contents"/* "$mountdir"/ || die_unmount 'Failed to copy /'
+	ls_contents=`ls "$mountdir/"`
+	printf "%s\n" "$ls_contents"
 else
 	time tar -C "$mountdir" -zxf "$contents" || die_unmount 'Failed to extract /'
 fi

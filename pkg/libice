@@ -1,5 +1,5 @@
 [deps]
-pkg-config
+pkgconf
 xproto
 xtrans
 
@@ -11,6 +11,6 @@ sha512=ce5c73947328aa97b374b02c60d6bf6449246d313c413ab0703d655236f688d37b0a85918
 ftp://ftp.x.org/pub/individual/lib/libICE-1.0.7.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

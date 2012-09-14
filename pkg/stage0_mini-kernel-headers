@@ -1,0 +1,13 @@
+[main]
+filesize=4038
+sha512=f28288fcad95f9f9fea7e5c7bff7c2a057decb24c21ce9d5ff26df0eda363f3ce94d3d9339d404d75fd3c5b0a80c1c481e9625846ea5925362b3ccae9d829316
+
+[deps]
+stage0_musl
+
+[mirrors]
+http://mirror.wzff.de/sabotage/minilkh-0.0.1.tar.bz2
+
+[build]
+mkdir -p "$R/include"
+cp -r include/* "$R/include/"

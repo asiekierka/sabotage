@@ -1,0 +1,23 @@
+[build]
+destdir="$butch_install_dir/bin"
+mkdir -p $destdir
+
+dest="$destdir/la"
+
+cat << EOF > "$dest"
+#!/bin/sh
+# busybox shell doesn't seem to implement "alias"
+ls -la \$@
+EOF
+chmod +x "$dest"
+
+dest="$destdir/lat"
+
+cat << EOF > "$dest"
+#!/bin/sh
+# busybox shell doesn't seem to implement "alias"
+ls -lat \$@
+EOF
+chmod +x "$dest"
+
+

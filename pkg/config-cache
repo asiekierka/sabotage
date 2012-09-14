@@ -1,0 +1,9 @@
+[build]
+dest="$butch_install_dir/lib/"
+mkdir -p "$dest"
+cp -f "$K/config.cache" "$dest"
+sed -i 's@#IF'$A'#@@' "$dest/config.cache"
+
+#remove this line if you have big endian
+sed -i 's@#IFLE#@@' "$dest/config.cache"
+true

@@ -1,0 +1,11 @@
+--- atk-2.4.0.org/atk/atkhyperlink.c
++++ atk-2.4.0/atk/atkhyperlink.c
+@@ -20,6 +20,8 @@
+ #include "atkhyperlink.h"
+ #include "atkintl.h"
+ 
++gboolean atk_hyperlink_is_selected_link (AtkHyperlink *link);
++
+ enum
+ {
+   LINK_ACTIVATED,

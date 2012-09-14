@@ -1,0 +1,49 @@
+[deps]
+kernel
+sabotage-utils
+
+[main]
+filesize=838403
+sha512=bd7066d588d0eadc7872980847d7474fce25ddcff813aa8a9a62216a2f981118d7b4de745b3dd3ab7203b892657e0574d5b66e31dfd8e883e76afb4c6ae8139e
+
+[mirrors]
+http://gentoo.netnitco.net/distfiles/alsa-lib-1.0.25.tar.bz2
+http://alsa.cybermirror.org/lib/alsa-lib-1.0.25.tar.bz2
+http://distfiles.lesslinux.org/alsa-lib-1.0.25.tar.bz2
+http://distfiles.exherbo.org/distfiles/alsa-lib-1.0.25.tar.bz2
+
+[build]
+rm -f src/compat/hsearch_r.c
+touch src/compat/hsearch_r.c
+
+patch -p1 < "$K/alsa-lib_pcm_h.patch"
+
+FU=include/global.h
+sed -i 's,#include <time.h>,#include <sys/time.h>,' $FU || exit 1
+sed -i 's,#if !defined(_POSIX_C_SOURCE) && !defined(_POSIX_SOURCE),#if 0,' $FU || exit 1
+
+
+FU=src/conf.c
+
+# musl doesn't support PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+# this hack sets the right flag to 1 but will fail when musl changes its internal layout
+# TODO: the proper way is to use an __attribute__((constructor)) function that initializes it
+
+sed -i 's@PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP@{{{1,0,0,0,0,0,0,0,0,0}}}@' src/conf.c
+
+
+#lol alsa uses %L instead of %ll
+sed -i 's,%L,%ll,g' $FU || exit 1
+FU=test/midiloop.c
+sed -i 's,%L,%ll,g' $FU || exit 1
+
+patch -p1 < "$K/alsa-lib_mask_inline.patch"
+
+THIS="$PWD"
+CFLAGS="-include stdlib.h -D_POSIX_C_SOURCE=200809L -D_GNU_SOURCE -DF_SETSIG=10 -g -O0" ./configure -C \
+	 --prefix="$butch_prefix" --disable-python --enable-debug --with-debug || exit 1
+
+find . -name Makefile -exec sed -i 's,STRIP = strip,STRIP = echo,' "{}" \; || exit 1
+
+make V=1 -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1

@@ -9,7 +9,7 @@ sha512=bbac7d0d63fd3b4cd895e247c448adce7f4c2b6b66ecfe26af138018e0f96991fa8cbd8cb
 http://ftp.gnu.org/gnu/mpfr/mpfr-3.0.1.tar.bz2
 
 [build]
-CC="$CC -static -L$R/lib -I$R/include" ./configure --prefix=/ --disable-shared || exit 1
+CC="$CC -static -L$R/lib -I$R/include" ./configure -C --prefix="$butch_prefix" --disable-shared || exit 1
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1
 rm -f $R/lib/libmpfr.la

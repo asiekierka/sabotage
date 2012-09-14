@@ -10,6 +10,6 @@ sha512=78fcb840d98c32a344a2864be851f0280aeec286d0410ef461077f921f19efbc7714620ff
 ftp://ftp.x.org/pub/individual/lib/libXrender-0.9.6.tar.bz2
 
 [build]
-./configure --prefix=/  || exit 1
+./configure -C --prefix="$butch_prefix"  || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

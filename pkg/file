@@ -6,7 +6,7 @@ sha512=858cae086aaca14381961ea13fd77d4b6c16e8fb7b533c83c828c0797ad1f14be25bb55b0
 ftp://ftp.astron.com/pub/file/file-5.07.tar.gz
 
 [build]
-CC="$CC -static -L$R/lib -I$R/include -D_GNU_SOURCE" ./configure --prefix=/ --disable-shared || exit 1
+CC="$CC -static -L$R/lib -I$R/include -D_GNU_SOURCE -D_BSD_SOURCE" ./configure -C --prefix="$butch_prefix" --disable-shared || exit 1
 sed -i 's/memory.h/string.h/' src/encoding.c src/ascmagic.c
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

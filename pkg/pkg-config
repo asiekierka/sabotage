@@ -9,6 +9,6 @@ sha512=6c50ca542733feeb10301097ade32075c5417ada5bdd195957de8521a28b20e0e7a54ed55
 http://pkgconfig.freedesktop.org/releases/pkg-config-0.25.tar.gz
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make || exit 1
 make -j$MAKE_THREADS DESTDIR="$butch_install_dir" install || exit 1

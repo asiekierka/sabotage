@@ -1,0 +1,30 @@
+[main]
+filesize=613261
+sha512=5d37d3695105fc345ca269ab98cd991472e5de72f702c9a8a652a7d114a40eb99670c69a87ecb24bf64e96318fc0ee2bcb44c497d9d3d2a67378c99e4eb348fe
+tardir=jpeg-6b
+
+[mirrors]
+http://prdownloads.sourceforge.net/libjpeg/jpegsrc.v6b.tar.gz
+
+[deps]
+libjpeg
+
+[build]
+
+CFLAGS=-fPIC ./configure --prefix="$butch_prefix" \
+  --disable-dso || exit 1
+
+sed -i -e 's, $(bindir), $(DESTDIR)/$(bindir),' Makefile
+sed -i -e 's, $(libdir), $(DESTDIR)/$(libdir),' Makefile
+sed -i -e 's, $(includedir), $(DESTDIR)/$(includedir),' Makefile
+sed -i -e 's, $(mandir), $(DESTDIR)/$(mandir),' Makefile
+
+mkdir -p "$butch_install_dir/bin"
+mkdir -p "$butch_install_dir/lib"
+mkdir -p "$butch_install_dir/include"
+mkdir -p "$butch_install_dir/man/man1"
+
+make -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1
+make DESTDIR="$butch_install_dir" install-lib || exit 1
+make DESTDIR="$butch_install_dir" install-headers || exit 1

@@ -1,15 +1,25 @@
 [deps]
+xz
 openssl
+openssl-dynamic
+ca-certificates
+zlib-dynamic
 
 [main]
-filesize=2256354
-sha512=2fb6437b31ed52ee80f183585c3539a470d934f9e9f6d08b24f2b870276411512688d7f34979a2e1852bbd97d7df935c6cb1fef756d7b966189aab267041ec6a
+filesize=1996532
+sha512=0c4343c2abf5e13190a648a50d2e575d89553f94a119334a97662ccc39c46944db4b84028ea62e6200b75734616e10fd14f61abd1318248ef014501a2d4bf0b4
 
 [mirrors]
-http://curl.haxx.se/download/curl-7.21.4.tar.bz2
+http://curl.haxx.se/download/curl-7.26.0.tar.lzma
 
 [build]
+CFLAGS="-Wl,-rpath-link=/lib -D_GNU_SOURCE" ./configure -C \
+  --prefix="$butch_prefix" \
+  --with-ssl \
+  --enable-ipv6 \
+  --with-ca-path="$butch_prefix"/etc/ssl/certs \
+  --with-random=/dev/urandom || exit 1
 
-./configure --prefix=/ --disable-shared --enable-ipv6 --with-random=/dev/urandom || exit 1
+
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

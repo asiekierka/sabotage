@@ -1,0 +1,15 @@
+[mirrors]
+http://ftp.gnome.org/pub/gnome/sources/atk/2.4/atk-2.4.0.tar.xz
+
+[main]
+filesize=607156
+sha512=20316b4de66a1871bb9f802831b2262c54eaecf8d7c3696d3949f8464834c6aeca32d57382f0c9a9c093d2099e7d4c71c83b917474d528758339dcd1397e1571
+
+[deps]
+glib
+
+[build]
+patch -p1 < "$K/atk-hyperlink.patch"
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
+make -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1

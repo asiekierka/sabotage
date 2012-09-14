@@ -6,6 +6,6 @@ sha512=d4894a24fc553c6de2ae2b6fdcbe334967cb804385e4ca2af3ec3dc005727263c78229fd0
 ftp://ftp.x.org/pub/individual/proto/xcmiscproto-1.2.1.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1
 

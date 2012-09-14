@@ -13,6 +13,6 @@ http://www.kernel.org/pub/software/scm/git/git-1.7.6.5.tar.gz
 
 make CURL_LIBCURL="/lib/libcurl.a /lib/libssl.a /lib/libcrypto.a" \
   CC="$CC" HOSTCC="$HOSTCC" \
-  prefix=/ gitexecdir=/lib/git-core \
+  prefix="$butch_prefix" gitexecdir="$butch_prefix"/lib/git-core \
   NO_TCLTK=1 NO_PYTHON=1 NO_PTHREADS=1 NO_MEMMEM=1 NO_EXPAT=1 \
   DESTDIR="$butch_install_dir" -j$MAKE_THREADS all install  || exit 1

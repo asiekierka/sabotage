@@ -1,0 +1,33 @@
+[main]
+filesize=6695020
+sha512=3dad38279c328e671f65018d86c04da59a6dff481ff48530a6341505abbd3e2a526a5825a0995d77c690f54acbaa0818832bd44dd4246a87d726862e0c31d82b
+
+[mirrors]
+http://leptonica.com/source/leptonica-1.68.tar.gz
+
+[deps]
+zlib
+libpng
+libjpeg
+libtiff
+
+[build]
+patch -p1 < "$K/liblepton_pngio.patch"
+#CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
+cd src
+
+sed -i 's/CC =/#CC =/' makefile.static
+
+make -j$MAKE_THREADS -f makefile.static CC="gcc -ansi -D_BSD_SOURCE -DANSI" || exit 1
+
+# installing headers
+dest="$butch_install_dir/include/leptonica"
+mkdir -p "$dest"
+cp *.h "$dest"/
+
+#installing lib
+dest="$butch_install_dir/lib"
+mkdir -p "$dest"
+cp ../lib/nodebug/liblept.a "$dest"/ || exit 1
+
+#make DESTDIR="$butch_install_dir" -f makefile.static install || exit 1

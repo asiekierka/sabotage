@@ -9,6 +9,6 @@ sha512=50d53f53f69882afe9fee0467e743ad797ef4a1c798c43a188ee58e9b72ea627e9b1b592e
 ftp://ftp.x.org/pub/individual/proto/videoproto-2.3.1.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

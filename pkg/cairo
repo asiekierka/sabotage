@@ -1,0 +1,20 @@
+[mirrors]
+http://distfiles.lesslinux.org/cairo-1.12.2.tar.xz
+http://cairographics.org/releases/cairo-1.12.2.tar.xz
+
+[main]
+filesize=42051584
+sha512=149e55e206175220448c520624980ba0081a3e2336202f6c5d5ba9098a51c01f6d89843c3c3f0d5bed3473a5ff49dee6530e2cacec93a94c9d78767cb881f847
+
+[deps]
+fontconfig
+libpng
+glib
+pixman
+libx11
+
+[build]
+#patch -p1 < "$K/some.patch"
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
+make -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1

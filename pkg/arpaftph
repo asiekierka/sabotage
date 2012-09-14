@@ -1,0 +1,4 @@
+[build]
+dest="$butch_install_dir/include/arpa" 
+mkdir -p "$dest" || exit 1
+cp -f "$K"/arpaftp.h "$dest/ftp.h" || exit 1

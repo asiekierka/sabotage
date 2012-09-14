@@ -1,7 +1,5 @@
 [deps]
 m4
-gawk
-sed
 gmp
 mpfr
 mpc
@@ -19,6 +17,9 @@ tardir=gcc-4.5.3
 http://ftpmirror.gnu.org/gcc/gcc-4.5.3/gcc-core-4.5.3.tar.bz2
 
 [build]
+#busybox awk doesnt like the two calls to attribute_mode function which is commented out
+sed -i '/   *attribute_mode/s@attr@#&@' gcc/config/i386/i386-builtin-types.awk
+
 # we're doing a bit of hack to place the g++ contents in this folder
 # the build system isnt really laid out for extracting multiple tarballs into
 # the same dir...
@@ -54,7 +55,8 @@ if [ x$A = xarm ] ; then
 fi
 
 #create directory structure for static toolchain
-TC_PATH=$R/opt/toolchain
+TC_PATH="$butch_prefix"/opt/toolchain
+butch_install_dir="$TC_PATH"
 mkdir -p $TC_PATH
 SELF=`pwd`
 if [[ ! -e $TC_PATH/usr ]] ; then
@@ -65,12 +67,13 @@ fi
 
 export CC="$CC -static -D_GNU_SOURCE -I$R/include -L$R/lib"
 
-CFLAGS="-O0 -s" LDFLAGS="-Wl,--no-keep-memory" ./configure --with-newlib --with-headers=no --prefix=/ \
+CFLAGS="-O0 -s" LDFLAGS="-Wl,--no-keep-memory" ./configure -C --with-newlib --with-headers=no --prefix="$butch_prefix" \
   --disable-multilib --disable-nls --disable-shared --disable-mudflap \
   --disable-libmudflap --disable-libssp --disable-libgomp \
   --disable-debug --disable-bootstrap \
+  --disable-tls \
   --enable-lto --with-system-zlib \
-  --with-build-sysroot=/ --with-sysroot=$TC_PATH \
+  --with-build-sysroot="$butch_prefix" --with-sysroot="$butch_prefix" \
   --with-target-libiberty=no --with-target-zlib=no \
   --enable-languages=c,c++ --enable-clocale=generic \
   LD_FOR_TARGET=$TC_PATH/bin/ld \
@@ -84,6 +87,8 @@ make -j$MAKE_THREADS BOOT_LDFLAGS="-static" LDFLAGS="-static" || exit 1
 #according to some gnu ppl, install-gcc will only install the relevant
 #stuff and leaves libiberty and co out.
 make -j1 DESTDIR=$TC_PATH install-gcc install-lto-plugin install-target-libgcc install-target-libstdc++-v3 || exit 1
+
+fixdestdir
 
 #create a host_tuple dummy entry, so binutils stuff will get into /bin, etc
 lib_gcc=`$TC_PATH/bin/gcc -print-libgcc-file-name`
@@ -100,4 +105,23 @@ fi
 #remove gcc's stddef.h which is not compatible
 rm $TC_PATH/lib/gcc/$host_tuple/4.5.3/include/stddef.h
 
+copy() {
+	printf "cp %s %s\n" "$1" "$2"
+	cp "$1" "$2"
+}
+
+echo link gcc intrinsic headers into /include/gcc
+# this allows usage of -I/include/gcc for stuff that uses them
+mkdir -p  $TC_PATH/include/gcc
+for i in $TC_PATH/lib/gcc/$host_tuple/4.5.3/include/* ; do
+  header=`basename "$i"`
+  # do not copy headers that exist in musl
+  [ -e "$TC_PATH/include/$header" ] || copy "$i" "$TC_PATH/include/gcc/"
+done
+
+
 [ "$A" = x86_64 ] && mv $TC_PATH/lib64/* $TC_PATH/lib/ || true
+
+#prevent custom buildscripts from messing with the toolchain
+exit 0
+

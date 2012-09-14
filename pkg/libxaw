@@ -11,6 +11,6 @@ sha512=6c3fffafac63519be51c25a2e82ce8c3edecd80d18173b60745d6b663d2a0026dcfefb1e8
 ftp://ftp.x.org/pub/individual/lib/libXaw-1.0.9.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

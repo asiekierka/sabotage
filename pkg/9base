@@ -1,6 +1,6 @@
 [deps]
 musl
-kernel
+kernel-headers
 
 [main]
 filesize=1045868
@@ -10,8 +10,19 @@ sha512=38108a94118b56c6f3982e692beb1068c52f9aecd74447d6b552b77fae5e365eab72b4781
 http://dl.suckless.org/tools/9base-6.tar.gz
 
 [build]
+mbwc_fix() {
+        local file=$1
+        echo '#include "mbwc.h"' > $file
+        cat troff/$file >> $file
+        mv $file troff/$file
+}
+for i in n1.c t11.c n10.c mbwc.c ; do mbwc_fix $i ; done
+
 echo "PREFIX = /" >>config.mk
-echo "CFLAGS += -D_GNU_SOURCE -DPLAN9PORT -D__USE_MISC" >>config.mk
+# the dc calculator, called by bc, assumes a signed char,
+# which is not true for ARM. it fails on "4 - 3" resp. "4 3 -ps."
+# without -fsigned-char.
+echo "CFLAGS += -fsigned-char -D_GNU_SOURCE -DPLAN9PORT -D__USE_MISC" >>config.mk
 
 sed -i 's/__linux__/__not_linux__/;s/__sun__/__linux__/' lib9/dirread.c
 sed -i '/sys.termios.h/d' lib9/readcons.c
@@ -26,5 +37,5 @@ do
   make -C $f DESTDIR="$butch_install_dir" install || exit 1
 done
 
-cd $R/bin
+cd "$butch_install_dir/bin"
 ln -sf troff nroff

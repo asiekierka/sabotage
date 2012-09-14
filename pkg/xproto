@@ -6,6 +6,6 @@ sha512=1c76dfb97b8df1afd0133ebfdedbe9dbf96ebc552370166424fd80748d2dba5f0713bde5f
 ftp://ftp.x.org/pub/individual/proto/xproto-7.0.21.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

@@ -1,8 +1,38 @@
 #!/bin/sh
-Xfbdev -retro  :0 -keybd evdev,,device=/dev/input/event2 -mouse evdev,,device=/dev/input/event3 &
+# hack, hack !
+
+machine=qemu
+#machine=vbox
+
+if [ "$machine" = "qemu"  ]  ; then
+  keyb=event1
+  mouse=event2
+else
+  # settings for virtual box
+  keyb=event2
+  mouse=event3
+fi
+
+Xfbdev -retro  :0 -keybd evdev,,device=/dev/input/$keyb \
+  -mouse evdev,,device=/dev/input/$mouse &
+
 export DISPLAY=:0
+
 sleep 3
-twm
+
+if which openbox > /dev/null ; then
+  lxsession &
+  sleep 1
+  openbox &
+  lxpanel &
+  xterm &
+
+else
+  echo falling back to TWM
+  twm
+fi
+
+sleep 2
 
 
 

@@ -2,36 +2,32 @@
 musl
 
 [main]
-filesize=16321720
-sha512=24b8e2f50d7031f255ddbc45e0a608e79f3d0a6c55e2c0243944e23f5ab01679567a92712179e3b2ebd4df89ef3a84ee5ab875bd9cfbda16c0cc14147cdfa705
+filesize=13568573
+sha512=d0bb91141ac4c5cc3d98dbeada130ae70c32cf59ac1a74991b5b1f52138b37f5cfa4233935afed4a16edfc9df784df6b3c538240dc654b82bac1fcb8efe3c3a1
 
 [mirrors]
-http://www.cpan.org/src/5.0/perl-5.14.1.tar.gz
+http://www.cpan.org/src/5.0/perl-5.16.0.tar.bz2
 
 [build]
 
 sed -i 's,-fstack-protector,-fnostack-protector,g' ./Configure
 
-CC="gcc" ./Configure -des -Accflags='-D_GNU_SOURCE' \
-  -Dprefix=/ -Dvendorprefix=/ -Dinstallprefix=$R/ \
-  -Dprivlib=/share/perl5/core_perl \
-  -Darchlib=/lib/perl5/core_perl \
-  -Dsitelib=/share/perl5/site_perl \
-  -Dsitearch=/lib/perl5/site_perl \
-  -Dvendorlib=/share/perl5/vendor_perl \
-  -Dvendorarch=/lib/perl5/vendor_perl \
-  -Dscriptdir=/bin \
-  -Dsitescript=/bin \
-  -Dvendorscript=/bin \
+CC="gcc" ./Configure -des -Accflags='-D_GNU_SOURCE -D_BSD_SOURCE' \
+  -Dprefix="$butch_prefix" -Dvendorprefix="$butch_prefix" \
+  -Dinstallprefix="$butch_install_dir"/ \
+  -Dprivlib="$butch_prefix"/share/perl5/core_perl \
+  -Darchlib="$butch_prefix"/lib/perl5/core_perl \
+  -Dsitelib="$butch_prefix"/share/perl5/site_perl \
+  -Dsitearch="$butch_prefix"/lib/perl5/site_perl \
+  -Dvendorlib="$butch_prefix"/share/perl5/vendor_perl \
+  -Dvendorarch="$butch_prefix"/lib/perl5/vendor_perl \
+  -Dscriptdir="$butch_prefix"/bin \
+  -Dsitescript="$butch_prefix"/bin \
+  -Dvendorscript="$butch_prefix"/bin \
   -Dinc_version_list=none \
-  -Dman1dir=/share/man/man1 -Dman1ext=1perl \
-  -Dman3dir=/share/man/man3 -Dman3ext=3perl
+  -Dman1dir="$butch_prefix"/share/man/man1 -Dman1ext=1perl \
+  -Dman3dir="$butch_prefix"/share/man/man3 -Dman3ext=3perl || exit 1
 
-# http://bugs.gentoo.org/show_bug.cgi?id=331113
-make -j1
-make install
+make -j$MAKE_THREADS || exit 1
+make install || exit 1
 
-cd ext/POSIX
-perl Makefile.PL
-make
-make install

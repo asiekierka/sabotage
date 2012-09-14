@@ -14,6 +14,6 @@ sha512=64b72cb9bad4a1090808df0cc1adfb1856fa1352f11d316c444f91d99f226856f77b19050
 ftp://ftp.x.org/pub/individual/lib/libXfont-1.4.3.tar.bz2
 
 [build]
-CFLAGS="-DNOFILES_MAX=256 -Dfd_mask=long" ./configure --prefix=/ || exit 1
+CFLAGS="-D_GNU_SOURCE -DNOFILES_MAX=256 -Dfd_mask=long" ./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

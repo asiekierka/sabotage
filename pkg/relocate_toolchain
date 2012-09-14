@@ -40,3 +40,8 @@ ln -sf musl-gcc $R/bin/gcc
 ln -s $R/bin/gcc $R/bin/cc
 
 sed -i 's,gcc=gcc,gcc=rawcc,' $R/bin/musl-gcc
+
+#prevent custom buildscripts from messing with the toolchain
+#the finished toolchain is in $TC_PATH
+exit 0
+
