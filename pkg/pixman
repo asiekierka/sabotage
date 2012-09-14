@@ -1,15 +1,17 @@
 [deps]
 perl
 
-[main]
-filesize=457580
-sha512=5f02761d0be09c30fb8244291534f31f9a7abb6483c98dfc4d26cbcc953a65482fc0cea69056af028ae048bc349d0e030ec2ab2a81d2be49d3af13e6dad4505d
-
 [mirrors]
-ftp://ftp.x.org/pub/individual/lib/pixman-0.21.6.tar.bz2
+http://distfiles.lesslinux.org/pixman-0.26.0.tar.gz
+http://cairographics.org/releases/pixman-0.26.0.tar.gz
+http://www.x.org/releases/individual/lib/pixman-0.26.0.tar.gz
+
+[main]
+filesize=747777
+sha512=f60a3b1620b8dcc74b357efe34578881e4441cc72117c94ac96132fe417d15e03f2f71fbaa10344fd4ed82aab1173449472a8d913e8025c36660e1d65d68ba62
 
 [build]
-CFLAGS="-DPIXMAN_NO_TLS" ./configure --prefix=/ || exit 1
+CFLAGS="-DPIXMAN_NO_TLS" ./configure -C --prefix="$butch_prefix" || exit 1
 sed -i -e '/TOOLCHAIN_SUPPORTS_ATTRIBUTE_CONSTRUCTOR/d' -e '/TOOLCHAIN_SUPPORTS__THREAD/d' config.h
 make -j$MAKE_THREADS  || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

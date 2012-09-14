@@ -9,6 +9,6 @@ sha512=20514a760d27f36f880e1fafde1e25787a1a0b504348a756d6c18c4a0efcb10e2b08e20ec
 ftp://ftp.x.org/pub/individual/proto/resourceproto-1.1.1.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

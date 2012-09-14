@@ -1,5 +1,5 @@
 [deps]
-pkg-config
+pkgconf
 xproto
 
 [main]
@@ -10,6 +10,6 @@ sha512=febae66e0d0e6d020dde06a0dd918f2126c92f1e2404020bf3f947be8f7fb48e2082dac3f
 ftp://ftp.x.org/pub/individual/lib/libfontenc-1.1.0.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

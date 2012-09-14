@@ -13,6 +13,6 @@ http://xcb.freedesktop.org/dist/libxcb-1.7.tar.bz2
 [build]
 mkdir hack
 cp /bin/cat hack/xsltproc
-PATH=hack:$PATH ./configure --prefix=/ --disable-build-docs || exit 1
+PATH=hack:$PATH ./configure -C --prefix="$butch_prefix" --disable-build-docs || exit 1
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

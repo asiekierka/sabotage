@@ -10,3 +10,7 @@ export MAKE_THREADS=1
 #export ARM_ARCH=6
 export CC=gcc
 export HOSTCC=gcc
+
+# this script will copy the config.cache template into the actual builddir
+# you can disable this line and then the configure cache won't get used.
+export BUTCH_BUILD_TEMPLATE="$K/butch_template_configure_cached.txt"

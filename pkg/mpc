@@ -9,7 +9,7 @@ sha512=84daf8e6f63c876ba4c58bd1f25aea2766dd42d6e020aa02e93682e7a1d03da6c30d02c09
 http://www.multiprecision.org/mpc/download/mpc-0.9.tar.gz
 
 [build]
-CC="$CC -static -L$R/lib -I$R/include" ./configure --prefix=/ --disable-shared || exit 1
+CC="$CC -static -L$R/lib -I$R/include" ./configure -C --prefix="$butch_prefix" --disable-shared || exit 1
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1
 rm -f $R/lib/libmpc.la

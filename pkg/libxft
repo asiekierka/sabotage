@@ -10,6 +10,6 @@ sha512=948ba8918895e49705b4b925b7821a3885c6b9de2e1fe1e95e3fcfee10d06906bf00eeb80
 http://xorg.freedesktop.org/releases/individual/lib/libXft-2.2.0.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

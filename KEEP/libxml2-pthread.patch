@@ -1,0 +1,10 @@
+--- libxml2-2.8.0.org/threads.c
++++ libxml2-2.8.0/threads.c
+@@ -47,6 +47,7 @@
+ #ifdef HAVE_PTHREAD_H
+ 
+ static int libxml_is_threaded = -1;
++#else
+ #ifdef __GNUC__
+ #ifdef linux
+ #if (__GNUC__ == 3 && __GNUC_MINOR__ >= 3) || (__GNUC__ > 3)

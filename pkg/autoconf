@@ -1,3 +1,6 @@
+[deps]
+perl
+
 [main]
 filesize=1381988
 sha512=77f42d7a3825a398531ab52bf05936720788167f7d04f884a2acb7745edb60a706799451ff983f1048bc929cd38972ab29530a5e4ed6f686ff1700e0281a7e84
@@ -6,6 +9,6 @@ sha512=77f42d7a3825a398531ab52bf05936720788167f7d04f884a2acb7745edb60a706799451f
 ftp://ftp.gnu.org/pub/gnu/autoconf/autoconf-2.68.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

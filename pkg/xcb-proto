@@ -9,6 +9,6 @@ sha512=c6672cc4c9972ff6a2c5109ac69598fe8b9eafb8092248b3c4a6856651fa095a17168b646
 http://xcb.freedesktop.org/dist/xcb-proto-1.6.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

@@ -9,6 +9,6 @@ sha512=934a2999923eda9296f838a4846daac4bdd47929ec6e81f8104d5a54adc0dae348c8fc38f
 http://sourceforge.net/projects/expat/files/expat/2.0.1/expat-2.0.1.tar.gz
 
 [build]
-CFLAGS=-D_GNU_SOURCE ./configure --prefix=/ --mandir=/share/man || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" --mandir="$butch_prefix"/share/man || exit 1
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

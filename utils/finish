@@ -1,7 +1,7 @@
 #!/bin/sh
 # This script finishes a chroot after stage0 or stage1 is built into it
 
-if [[ ! $H || ! $R || ! $K ]] ; then
+if [ ! "$H" -o ! "$R" -o ! "$K" ] ; then
 	echo "some required env variables not set. run . ./config before executing this"
 	exit 1
 fi
@@ -28,6 +28,6 @@ done
 cp "$K"/config.stage1 "$R"/src/config
 echo "export A=$A" >> "$R"/src/config
 
-cp /etc/resolv.conf "$R"/etc
+echo nameserver 8.8.8.8 > "$R"/etc/resolv.conf
 ln -s /proc/mounts "$R"/etc/mtab
 

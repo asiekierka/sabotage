@@ -1,0 +1,14 @@
+[mirrors]
+http://mikmod.shlomifish.org/files/libmikmod-3.2.0.tar.gz
+
+[main]
+filesize=873258
+sha512=1f48adb4e1540bb9d2ea90c2f1fd1fb2fc494ae2dd0a6bceb20a8f7f7101f37f8c967b0ce36d5e09943d3afe9319f533867d80e5b5552439d300691bee70e33d
+
+[deps]
+
+[build]
+#patch -p1 < "$K/some.patch"
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
+make -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1

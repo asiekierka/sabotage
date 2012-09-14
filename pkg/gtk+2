@@ -1,0 +1,45 @@
+[mirrors]
+http://ftp.gnome.org/pub/gnome/sources/gtk+/2.24/gtk+-2.24.10.tar.xz
+
+[main]
+filesize=13261132
+sha512=46bd22af861c04cf7d7b704356936f282da9e7edec1e637dd578170396ce6b4a837f660b46334ceb73372a076966e31afc02aaafb5d69796539ddaac1531fedf
+
+[deps]
+pango
+cairo
+atk
+gdk-pixbuf
+pkgconf
+libx11
+libxext
+
+[build]
+#patch -p1 < "$K/some.patch"
+
+# fixes from LFS: fix messed up makefile when docbook is installed
+sed -i 's#l \(gtk-.*\).sgml#& -o \1#' docs/{faq,tutorial}/Makefile.in
+sed -i 's#.*@man_#man_#' docs/reference/gtk/Makefile.in  
+
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix"\
+ --disable-rebuilds  --disable-glibtest || exit 1
+
+echo '#include <string.h>' >> config.h
+printf 'all:\n\ttrue\n\ninstall:\n\ttrue' > demos/Makefile
+printf 'all:\n\ttrue\n\ninstall:\n\ttrue' > tests/Makefile
+make -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1
+
+[ "$STAGEU" = "1" ] && fixdestdir
+
+mkdir -p "$butch_install_dir"/share/doc/gtk+-2.24.10 &&
+cp -R docs/faq/html "$butch_install_dir"/share/doc/gtk+-2.24.10/faq &&
+cp -R docs/tutorial/html "$butch_install_dir"/share/doc/gtk+-2.24.10/tutorial &&
+install -m644 docs/*.txt "$butch_install_dir"/share/doc/gtk+-2.24.10
+
+LD_LIBRARY_PATH="$butch_install_dir"/lib "$butch_install_dir"/bin/gtk-query-immodules-2.0 > "$butch_install_dir"/etc/gtk-2.0/gtk.immodules || exit 1
+
+cat > "$butch_install_dir"/etc/gtk-2.0/gtkrc << "EOF"
+include "/share/themes/Clearlooks/gtk-2.0/gtkrc"
+gtk-icon-theme-name = "elementary"
+EOF

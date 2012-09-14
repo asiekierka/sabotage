@@ -1,7 +1,7 @@
 [deps]
 apr
 musl
-pkg-config
+pkgconf
 
 [main]
 filesize=635000
@@ -13,7 +13,9 @@ http://www.eu.apache.org/dist/apr/apr-util-1.4.1.tar.bz2
 http://www.apache.org/dist/apr/apr-util-1.4.1.tar.bz2
 
 [build]
-./configure --prefix=/ --with-apr=/ || exit 1
+./configure -C --prefix="$butch_prefix" --with-apr="$butch_prefix" \
+  --disable-util-dso || exit 1
+echo '#define APR_HAVE_CRYPT_H 1' >> include/private/apu_config.h
 make -j$MAKE_THREADS || exit 1
 make install || exit 1
 

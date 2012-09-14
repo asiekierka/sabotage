@@ -9,6 +9,6 @@ sha512=3ac1f7678510d5e9ab6a90e0b9fb035362f2c37b6d43d17864852ae77be0f584dbfa01d81
 ftp://ftp.x.org/pub/individual/proto/fontsproto-2.1.1.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

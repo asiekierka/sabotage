@@ -6,10 +6,12 @@
 ARCH = $A
 
 # Installation prefix. DO NOT use /, /usr, or /usr/local !
-prefix = /
+prefix = #BUTCH_PREFIX#
 
 # Installation prefix for musl-gcc compiler wrapper.
-exec_prefix = /
+exec_prefix = #BUTCH_PREFIX#
+
+syslibdir = #BUTCH_PREFIX#/lib
 
 # Uncomment if you want to build i386 musl on a 64-bit host
 #CFLAGS += -m32

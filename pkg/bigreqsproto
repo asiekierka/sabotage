@@ -9,6 +9,6 @@ sha512=1dc906460bf3585f473062e7670a9874f64f9c678d2304a4ffb23748d96f55b11067359ae
 ftp://ftp.x.org/pub/individual/proto/bigreqsproto-1.1.1.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

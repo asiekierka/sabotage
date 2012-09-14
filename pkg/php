@@ -1,0 +1,38 @@
+[main]
+filesize=11150967
+sha512=f297203c75ca10dc98b19f1b923d6549da8b56df227b5bf409e9d21f8e19ea858f6681d842730a6643047eb34c44ddaf4414d319d9474296f0fd575ed7a0a7b0
+
+[mirrors]
+http://www.php.net/distributions/php-5.4.4.tar.bz2
+
+[deps]
+gettext
+freetype
+libedit
+re2c
+curl
+db
+openssl
+openssh
+libjpeg
+libpng
+zlib
+pcre
+libxml2
+json-c
+bzip2
+
+[build]
+#musl-git #needs crypt_r, currenlty fixed with hack during configure.
+
+CFLAGS="-D_BSD_SOURCE -D_GNU_SOURCE -DSTDC_HEADERS -I$butch_prefix/include "
+CFLAGS="$CFLAGS -DHAVE_STRLCPY -DHAVE_STRLCAT -DHAVE_STRTOK_R -DHAVE_POSIX_READDIR_R" \
+./configure -C ac_cv_func_crypt_r=0 --prefix="$butch_prefix" --enable-re2c-cgoto \
+  --with-curlwrappers --with-libxml-dir="$butch_prefix" --with-jpeg-dir="$butch_prefix" \
+  --with-png-dir="$butch_prefix" --with-openssl-dir="$butch_prefix" --with-sqlite \
+  --with-pcre-regex="$butch_prefix" --with-pcre-dir="$butch_prefix" --with-zlib="$butch_prefix" \
+  --with-zlib-dir="$butch_prefix" --with-curl="$butch_prefix" --with-bz2="$butch_prefix" \
+  --with-db4="$butch_prefix" -with-gettext="$butch_prefix" --with-gmp="$butch_prefix" \
+  --with-libedit="$butch_prefix" --with-freetype-dir="$butch_prefix" || exit 1
+make -j$MAKE_THREADS || exit 1
+make INSTALLROOT="$butch_install_dir" install || exit 1

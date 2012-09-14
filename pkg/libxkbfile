@@ -9,6 +9,6 @@ sha512=58d18cd1249cdbce1868c5e0447b621fe67da3f68307feea66bf545fd0ee5d117943519b1
 ftp://ftp.x.org/pub/individual/lib/libxkbfile-1.0.7.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

@@ -10,4 +10,4 @@ http://mercurial.selenic.com/release/mercurial-2.1.1.tar.gz
 
 [build]
 #for some strange reason it wants the prefix to start with // ...
-make PREFIX=// DESTDIR="$butch_install_dir" install-bin || exit 1
+make PREFIX=/// DESTDIR="$butch_install_dir" install-bin || exit 1

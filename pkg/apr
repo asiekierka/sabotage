@@ -1,6 +1,6 @@
 [deps]
 musl
-pkg-config
+pkgconf
 
 [main]
 filesize=785724
@@ -12,8 +12,8 @@ http://www.eu.apache.org/dist/apr/apr-1.4.6.tar.bz2
 http://www.apache.org/dist/apr/apr-1.4.6.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
-hush -c 'make -j$MAKE_THREADS' || exit 1
-hush -c 'make install' || exit 1
+CFLAGS="-include stdlib.h -include pwd.h -D_GNU_SOURCE -DSTDC_HEADERS" ./configure -C --prefix="$butch_prefix" || exit 1
+make -j$MAKE_THREADS || exit 1
+make install || exit 1
 
 

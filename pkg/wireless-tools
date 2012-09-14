@@ -1,0 +1,14 @@
+[mirrors]
+http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/wireless_tools.29.tar.gz
+
+[main]
+filesize=294417
+sha512=c169e29d53353e3d65913a5a5ba219752218968b0c036d4bfb25e7f3a9e31fe1e6adfcdbb410116e9c161c99aa3a7314fdc889ba36ba63f002d11ff9dba6974d
+
+[deps]
+
+[build]
+patch -p1 < "$K/wireless-tools-Makefile.patch"
+patch -p1 < "$K/wireless-tools-headers.patch"
+make CFLAGS="-D_GNU_SOURCE -D_BSD_SOURCE" PREFIX="$butch_prefix" -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1

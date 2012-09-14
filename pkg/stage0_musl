@@ -1,24 +1,37 @@
-[main]
-filesize=629680
-sha512=559f6df4e642254b19f572163090ce66b216182a708615c111d9e60d6326f8ee350afb809930b666e4f6f20cd6b70c1e71744628a99d32fe07ec57a829da6360
-
 [deps]
 stage0_gcc3
 
 [mirrors]
-http://www.etalabs.net/musl/releases/musl-0.8.7.tar.gz
+http://www.etalabs.net/musl/releases/musl-0.9.4.tar.gz
+[main]
+filesize=668620
+sha512=9a8d95103fac4fb50f2f0670556f96f4e214a6f2a57a438d4c5cc05324b7e1218327513615bf4c963a7151edffb7a09e439c15e3abe9a223798509406afb497b
 
 [build]
-cp $K/musl.config.mak config.mak
+cp "$K/musl.config.mak" config.mak
+[ -z "$butch_prefix" ] && butch_prefix=/
+sed -i "s,#BUTCH_PREFIX#,$butch_prefix," config.mak
 
-patch -p1 < $K/musl-0.8.7-math_h_casts.patch || exit 1
-patch -p1 < $K/musl-0.8.7-syscall.patch || exit 1
-
+patch -p1 < "$K/musl-0.9.4-cumulative.patch" || exit 1
 
 #disable building shared libs. the mere presence of libc.so messes up stuff.
 #we do not want anything in stage0 to be dynamically linked.
 echo "SHARED_LIBS =" >> config.mak
 
+# enable debug libc when DEBUGBUILD is set
+[ ! -z "$DEBUGBUILD" ] && echo "CFLAGS += -O0 -g" >> config.mak
+[ ! -z "$DEBUGBUILD" ] && echo "CFLAGS_ALL_SHARED += -O0 -g" >> config.mak
+
 make CC=$R/bin/gcc -j$MAKE_THREADS || exit 1
-make install DESTDIR=$R || exit 1
-sed -i 's:libc_prefix=".*":libc_prefix="'$R'":' $R/bin/musl-gcc
+make install DESTDIR="$butch_install_dir" || exit 1
+
+echo '#!/bin/sh' > "$butch_install_dir/bin/musl-gcc"
+echo 'self=`readlink -f "$0"`' >> "$butch_install_dir/bin/musl-gcc"
+echo 'selfdir=`dirname "$self"`' >> "$butch_install_dir/bin/musl-gcc"
+echo 'exec "$selfdir/rawcc" "$@" -specs "$selfdir/../lib/musl-gcc.specs"' >> "$butch_install_dir/bin/musl-gcc"
+chmod +x "$butch_install_dir/bin/musl-gcc"
+
+
+sed -i 's,//,'"$R"'/,g' "$butch_install_dir/lib/musl-gcc.specs"
+sed -i 's,/lib/ld-musl,/xxx/xxx/,' "$butch_install_dir/lib/musl-gcc.specs"
+

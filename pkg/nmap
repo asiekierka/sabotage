@@ -1,0 +1,26 @@
+[mirrors]
+http://nmap.org/dist/nmap-6.01.tar.bz2
+[main]
+filesize=21640157
+sha512=0b44542a0e33629d077c64129bac7e00b05b4e65a83b181b84fb5460a7da083bb29be00777a8d92c6f6b6fb0c009cebc330c02c7259166e8cea4109cdae50fc9
+
+[deps]
+libpcap
+pcre
+zlib-dynamic
+luajit
+libstdc++-dynamic
+openssl-dynamic
+
+[build]
+patch -p1 < "$K/nmap-configure-pcap_suitable.patch" || exit 1
+patch -p1 < "$K/nmap-nbase_h.patch" || exit 1
+find . -name 'configure' -exec sed -i 's@-llua@-lluajit-5.1@' "{}" \;
+LDFLAGS="-lz -Wl,-rpath-link=$butch_prefix/lib" CFLAGS="-D_GNU_SOURCE -D_BSD_SOURCE" \
+  CPPFLAGS="-I$butch_prefix/include/luajit-2.0/" \
+  CXXFLAGS="-DIPPROTO_MAX=256" \
+  ./configure -C --prefix="$butch_prefix" ac_cv_working_getaddrinfo=yes ac_cv_working_getnameinfo=yes || exit 1
+find . -name 'Makefile' -exec sed -i 's@-llua @-lluajit-5.1@' "{}" \;
+
+make -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1

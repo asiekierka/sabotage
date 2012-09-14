@@ -9,6 +9,6 @@ sha512=c38bc7247fd7b89732c892ee41c061b20397f4e79195601b7015dd55054b966f0797ac399
 ftp://ftp.x.org/pub/individual/proto/renderproto-0.11.1.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1
 

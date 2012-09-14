@@ -1,5 +1,9 @@
 [deps]
+openssl-dynamic
 ncurses
+ncurses-dynamic
+gzip
+ca-certificates
 
 [main]
 filesize=2521699
@@ -13,7 +17,9 @@ http://lynx.isc.org/current/lynx2.8.8dev.9.tar.bz2
 
 sed -i 's/define ACCEPT_ALL_COOKIES FALSE/define ACCEPT_ALL_COOKIES TRUE/' userdefs.h
 
-./configure --prefix=/ --sysconfdir=/etc --mandir=/share/man \
+CFLAGS="-include termcap.h -D_GNU_SOURCE -Wl,-rpath-link=/$butch_prefix/lib -I$butch_prefix/include/openssl" \
+  ./configure -C --prefix="$butch_prefix" --sysconfdir="$butch_prefix"/etc --mandir="$butch_prefix"/share/man \
   --with-ssl --disable-nls --enable-ipv6  || exit 1
+#passing -jXXX to make has no effect on this pkg
 make || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

@@ -1,0 +1,27 @@
+[mirrors]
+http://ftp.gnome.org/pub/gnome/sources/gdk-pixbuf/2.26/gdk-pixbuf-2.26.1.tar.xz
+
+[main]
+filesize=1167608
+sha512=dd327e2d3f8c50906ccd02bbf484380240a59fb5cc991b7cdd3b56b156dd7495fe161b14c1f4e8606a7167199679786a0e9c12e92b5b87807a3312e48e9096e7
+
+[deps]
+libtiff-dynamic
+libjpeg-dynamic
+libpng
+glib
+xz-dynamic
+
+[build]
+#patch -p1 < "$K/some.patch"
+CFLAGS=-D_GNU_SOURCE LDFLAGS="-ljpeg -ltiff -lz -llzma -ljpeg" ./configure -C \
+  --prefix="$butch_prefix" \
+  --disable-nls || exit 1
+make -j$MAKE_THREADS || exit 1
+make DESTDIR="$butch_install_dir" install || exit 1
+
+[ "$STAGEU" = "1" ] && fixdestdir
+
+dest="$butch_install_dir"/include/gdk-pixbuf-2.0/gdk-pixbuf-xlib/
+mkdir -p "$dest"
+cp -r contrib/gdk-pixbuf-xlib/*.h "$dest"

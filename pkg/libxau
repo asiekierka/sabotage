@@ -1,5 +1,5 @@
 [deps]
-pkg-config
+pkgconf
 xproto
 
 [main]
@@ -10,5 +10,5 @@ sha512=673f6621384388f1ff12274a4d68d95b67e344dab30c2ceb7e96cfa515d0268874a712cfb
 ftp://ftp.x.org/pub/individual/lib/libXau-1.0.6.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1

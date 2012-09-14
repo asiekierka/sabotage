@@ -1,0 +1,75 @@
+[deps]
+
+[build]
+# 9base dep is needed for "bc" in insertline tool.
+
+bindir="$butch_install_dir/bin"
+mkdir -p "$bindir"
+
+# config_log_extractor creates a bunch of C files out of each failed configure test
+# use like: cat config.log | config_log_extractor.pl
+cp "$K/config_log_extractor.pl" "$bindir"
+
+
+# insertline inserts a line into a give file. 
+# if the file was executable, permissions have to be restored manually
+util=insertline
+
+utilpath="$bindir/$util"
+cat << EOF > "$utilpath"
+#!/bin/sh
+
+getlinecount() {
+        wc -l "\$1" | cut -d " " -f 1
+}
+
+
+syntax() {
+	printf "\$0 filename linenumber content\n"
+	printf "will insert content (quote it propery) into filename at line linenumber + 1\n"
+	exit 1
+}
+
+insert_line() {
+        local file="\$1"
+        local lineno="\$2"
+        local content="\$3"
+	[ -z "\$1" ] && syntax
+	[ -z "\$2" ] && syntax
+	[ -z "\$3" ] && syntax
+
+        local numlines=\`getlinecount "\$file"\`
+        local restlines=\`echo "\$numlines - \$lineno" | bc\`
+        local tmpfile=\`printf "/tmp/insline.%.8d.%.8d" \$RANDOM \$RANDOM\`
+
+        head -n \$lineno "\$file" > \$tmpfile
+        printf "%s\n" "\$content" >> \$tmpfile
+        tail -n \$restlines "\$file" >> \$tmpfile
+        mv \$tmpfile "\$file"
+}
+
+insert_line "\$@"
+
+EOF
+chmod +x "$utilpath"
+
+# gnulibfix
+
+util=gnulibfix
+
+utilpath="$bindir/$util"
+cat << EOF > "$utilpath"
+#!/bin/sh
+empty_file() {
+        rm -f "\$1"
+        touch "\$1"
+}
+
+gnulib_dir="\$1"
+for i in freadahead.c fseterr.c ; do empty_file "\$gnulib_dir"/\$i ; done
+echo "void close_stdin(void) {}" > "\$gnulib_dir"/closein.c
+
+EOF
+chmod +x "$utilpath"
+
+

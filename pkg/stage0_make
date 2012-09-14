@@ -9,7 +9,7 @@ stage0_binutils
 http://ftp.gnu.org/gnu/make/make-3.82.tar.bz2
 
 [build]
-CC="$R/bin/musl-gcc -static" ./configure --prefix=/ --disable-nls || exit 1
+CC="$R/bin/musl-gcc -static -Werror-implicit-function-declaration" ./configure -C --prefix="$butch_prefix" --disable-nls || exit 1
 # __BEOS__ to use a shipped ar.h
 make -j$MAKE_THREADS CC="$R/bin/musl-gcc -static" CFLAGS=-D__BEOS__ || exit 1
 make DESTDIR=$R install || exit 1

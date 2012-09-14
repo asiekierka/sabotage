@@ -11,6 +11,6 @@ sha512=8494c598f53841841f22e0945257d04ba837dbe32261447bed2223ccd4c9aa8ba5795d5a0
 ftp://ftp.x.org/pub/individual/lib/libXt-1.1.1.tar.bz2
 
 [build]
-./configure --prefix=/
+./configure -C --prefix="$butch_prefix"
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install
 

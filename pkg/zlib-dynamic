@@ -2,18 +2,18 @@
 relocate_toolchain
 
 [main]
-filesize=557220
-sha512=f812ab3049fc2920a8da4649f6e60340ac365d58a0e76ace5219426aeb0759c0a474cfb2b9902cd0471158fa32a4d2c35692309d266e66013444bdced8ed00d9
+filesize=560351
+sha512=b1c073ad26684e354f7c522c14655840592e03872bc0a94690f89cae2ff88f146fce1dad252ff27a889dac4a32ff9f8ab63ba940671f9da89e9ba3e19f1bf58d
 
 [mirrors]
-http://zlib.net/zlib-1.2.6.tar.gz
-http://ftp.fifi.org/ImageMagick/delegates/zlib-1.2.6.tar.gz
-http://gentoo.netnitco.net/distfiles/zlib-1.2.6.tar.gz
-http://gentoo.tiscali.nl/distfiles/zlib-1.2.6.tar.gz
-http://prdownloads.sourceforge.net/libpng/zlib-1.2.6.tar.gz
+http://zlib.net/zlib-1.2.7.tar.gz
+http://ftp.fifi.org/ImageMagick/delegates/zlib-1.2.7.tar.gz
+http://gentoo.netnitco.net/distfiles/zlib-1.2.7.tar.gz
+http://gentoo.tiscali.nl/distfiles/zlib-1.2.7.tar.gz
+http://prdownloads.sourceforge.net/libpng/zlib-1.2.7.tar.gz
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure --prefix="$butch_prefix" || exit 1
 #busybox mktemp -u is broken and returns empty string
 sed -i 's,mktemp -u,mktemp,g' Makefile
 make -j$MAKE_THREADS || exit 1

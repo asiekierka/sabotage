@@ -1,3 +1,5 @@
+[deps]
+
 [main]
 filesize=2826473
 sha512=d7c5e54b6d4d8b9211f0006ca8786f7609d180cc1aaebf4f25e7e35e12959779cf66447359a602daed625621ca32b0d910d67aef3eb8b6fdc3c373819a88faa1
@@ -14,10 +16,10 @@ cp $K/ncurses-fallback.c ncurses/fallback.c
 
 # that </dev/ptmx is to fix an insanely stupid test for poll which
 # needs to block on fd 1 (which they assume to be a tty).
-CC="$CC -static -I$R/include -L$R/lib -D_GNU_SOURCE" ./configure \
-   --with-normal \
+CC="$CC -static -D_GNU_SOURCE" ./configure -C \
+   --with-normal --without-tests \
    --enable-sigwinch --with-fallbacks="linux vt100 xterm xterm256-color" \
-   --prefix=/ --includedir=/include --mandir=/share/man \
+   --prefix="$butch_prefix" --includedir="$butch_prefix"/include --mandir="$butch_prefix"/share/man \
    --disable-nls --without-dlsym --without-cxx-binding </dev/ptmx || exit 1
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

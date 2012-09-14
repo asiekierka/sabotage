@@ -1,0 +1,18 @@
+[deps]
+kernel-headers
+flex
+bison
+
+[main]
+filesize=77722
+sha512=683304786f45c21c095d41c207656e22d70b6c51accacd2bc8959cd068d2968c6ed2d018adc5989b2a58d4c86def00ff5d5f452134483b2bbf143e98f081d4c0
+tardir=gradm2
+
+[mirrors]
+http://grsecurity.net/test/gradm-2.9-201202232055.tar.gz
+
+[build]
+make -j$MAKE_THREADS CFLAGS="-include sys/socket.h -D_GNU_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_LARGEFILE64_SOURCE" || exit 1
+make install || exit 1
+
+

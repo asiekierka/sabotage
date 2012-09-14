@@ -9,5 +9,5 @@ sha512=fd3071b52c657975b4321e6c7ebe433c43ea6944d04d2228da075aad394e962eec705e41a
 ftp://ftp.x.org/pub/individual/lib/libXfixes-5.0.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1

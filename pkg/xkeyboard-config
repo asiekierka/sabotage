@@ -27,7 +27,7 @@ done
 
 fi
 
-./configure --with-xkb_base=$R/share/X11/xkb --with-xkb-rules-symlink=xorg || exit 1
+./configure -C --with-xkb_base=$R/share/X11/xkb --with-xkb-rules-symlink=xorg || exit 1
 make -j$MAKE_THREADS || exit 1
 make install || exit 1
 

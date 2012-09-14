@@ -2,20 +2,26 @@
 gcc4
 binutils
 
-[main]
-filesize=629680
-sha512=559f6df4e642254b19f572163090ce66b216182a708615c111d9e60d6326f8ee350afb809930b666e4f6f20cd6b70c1e71744628a99d32fe07ec57a829da6360
-
 [mirrors]
-http://www.etalabs.net/musl/releases/musl-0.8.7.tar.gz
+http://www.etalabs.net/musl/releases/musl-0.9.4.tar.gz
+
+[main]
+filesize=668620
+sha512=9a8d95103fac4fb50f2f0670556f96f4e214a6f2a57a438d4c5cc05324b7e1218327513615bf4c963a7151edffb7a09e439c15e3abe9a223798509406afb497b
 
 [build]
-cp $K/musl.config.mak config.mak
-patch -p1 < $K/musl-0.8.7-math_h_casts.patch || exit 1
-patch -p1 < $K/musl-0.8.7-syscall.patch || exit 1
+cp "$K/musl.config.mak" config.mak
+sed -i "s,#BUTCH_PREFIX#,$butch_prefix," config.mak
+
+# enable debug libc when DEBUGBUILD is set
+[ ! -z "$DEBUGBUILD" ] && echo "CFLAGS += -O0 -g" >> config.mak
+[ ! -z "$DEBUGBUILD" ] && echo "CFLAGS_ALL_SHARED += -O0 -g" >> config.mak
+
+patch -p1 < "$K/musl-0.9.4-cumulative.patch" || exit 1
 
 #create directory structure for static toolchain
-TC_PATH=$R/opt/toolchain
+TC_PATH="$butch_prefix"/opt/toolchain
+butch_install_dir="$TC_PATH"
 mkdir -p $TC_PATH
 SELF=`pwd`
 [ -z "$SELF" ] && exit 1
@@ -30,6 +36,16 @@ make clean
 make CC="$TC_PATH/bin/gcc" -j$MAKE_THREADS || exit 1
 make DESTDIR="$TC_PATH" install || exit 1
 
-#remove dependency on libgcc_eh, which doesnt get built
-#when gcc is built using --disable-shared
-sed -i 's,-lgcc_eh ,,' $TC_PATH/bin/musl-gcc
+[ "$STAGEU" = "1" ] && fixdestdir
+
+ln -sf  "$butch_prefix"/lib/libc.so "$TC_PATH/bin/ldd"
+
+musl_gcc="$TC_PATH/bin/musl-gcc"
+
+cp "$K/musl-gcc" "$musl_gcc"
+chmod +x "$musl_gcc"
+sed -i "s,AAAA,$A," "$musl_gcc"
+sed -i "s,PPPP,$R," "$musl_gcc"
+
+#prevent custom buildscripts from messing with the toolchain
+exit 0

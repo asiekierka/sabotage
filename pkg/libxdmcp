@@ -1,5 +1,6 @@
 [deps]
-pkg-config
+pkgconf
+xproto
 
 [main]
 filesize=288256
@@ -9,5 +10,5 @@ sha512=de87173cdd27ad7672189d078a006551681ff25f4cdac07f9db58b2af47e6cd0e4793156e
 ftp://ftp.x.org/pub/individual/lib/libXdmcp-1.1.0.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" -j$MAKE_THREADS install || exit 1

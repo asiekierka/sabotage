@@ -25,3 +25,20 @@ export HOSTCC=gcc
 ## stage0 builds in less than 2minutes using -j9 on an AMD 8core
 export MAKE_THREADS=1
 
+# disable template which could mess up the build
+unset BUTCH_BUILD_TEMPLATE
+
+#    ARM SPECIFIC STUFF    #
+
+## set your ARM floating point emulation [softfp/hard]
+## these flags are required to build the right toolchain
+## currently only softfp is supported by the stage0 compiler 
+## (hardfp is only marginally faster anyway)
+export ARM_FLOAT_MODE=softfp
+# export ARM_FLOAT_MODE=hard
+
+# set your ARM fpu type [vfp/neon/?]
+## currently only vfp is supported
+export ARM_FPU=vfp
+# export ARM_FPU=neon
+

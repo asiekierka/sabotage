@@ -9,6 +9,6 @@ sha512=ac28264c3b5e2b7f8fb3e566c64c5e6fe61f350d0da90ddaf7514eada09655886e1a74e56
 ftp://ftp.x.org/pub/individual/proto/inputproto-2.0.1.tar.bz2
 
 [build]
-./configure --prefix=/ || exit 1
+./configure -C --prefix="$butch_prefix" || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1
 

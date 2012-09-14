@@ -1,20 +1,26 @@
 [main]
-filesize=1115475
-sha512=cad3b92e2e5494d1cff25753913f8fd27041cb1083e2cb8d14faaed7e4d818a98a6c3038d48aa38c6b09caeec90589f12742549ca84d3355c316eed6642b5180
+filesize=1126034
+sha512=4fe1f7e0d5e572575b11253916354b333a7eca558720885d5dceb7c89dc5da81cd57feaa4be756dfa4f3e9ef508e5f460e5fda221765191b1c02ae37431a444e
 
 [mirrors]
-http://ftp.spline.de/pub/OpenBSD/OpenSSH/portable/openssh-5.8p2.tar.gz
+http://ftp.spline.de/pub/OpenBSD/OpenSSH/portable/openssh-6.0p1.tar.gz
+http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-6.0p1.tar.gz
 
 [deps]
 openssl
+sabotage-utils
 
 [build]
+# fix implicit declarations
+patch -p1 < "$K/openssh-configure.patch"
 
 cp $K/openssh-hacks.h .
-CC="gcc -include openssh-hacks.h -D_BSD_SOURCE -DMISSING_HOWMANY -DMISSING_FD_MASK -DMISSING_NFDBITS" ./configure --prefix=/ \
-  --sbindir=/bin --libexecdir=/lib/ssh --sysconfdir=/etc/ssh \
+CC="gcc -include openssh-hacks.h -D_BSD_SOURCE -DMISSING_HOWMANY -DMISSING_FD_MASK -DMISSING_NFDBITS" \
+  ./configure -C --prefix="$butch_prefix" \
+  --sbindir="$butch_prefix"/bin --libexecdir="$butch_prefix"/lib/ssh \
+  --sysconfdir="$butch_prefix"/etc/ssh \
   --with-privsep-user=nobody \
-  --with-md5-passwords --with-mantype=man --mandir=/share/man \
+  --with-md5-passwords --with-mantype=man --mandir="$butch_prefix"/share/man \
   --disable-strip --disable-lastlog --disable-utmpx --disable-btmp || exit 1
 
 mkdir netinet

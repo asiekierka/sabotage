@@ -10,10 +10,12 @@ http://ftp.gnu.org/gnu/binutils/binutils-2.22.tar.bz2
 
 [build]
 patch -p1 < $K/binutils-arm.diff || exit 1
+patch -p1 < $K/binutils-as-needed.patch || exit 1
 
 #create directory structure for static toolchain
-TC_PATH=$R/opt/toolchain
+TC_PATH="$butch_prefix/opt/toolchain"
 mkdir -p $TC_PATH
+butch_install_dir=$TC_PATH
 SELF=`pwd`
 [ -z "$SELF" ] && exit 1
 
@@ -24,17 +26,21 @@ if [[ ! -e $TC_PATH/usr ]] ; then
 fi
 
 
-CC="$CC -static -L$R/lib -I$R/include" ./configure \
-	--prefix=/ --disable-nls --disable-shared \
-	--with-build-sysroot=$R --with-sysroot=$TC_PATH \
+CC="$CC -static -D_GNU_SOURCE -L$R/lib -I$R/include -D_LARGEFILE64_SOURCE" ./configure -C \
+	--prefix="$butch_prefix" --disable-nls --disable-shared --disable-werror \
+	--with-build-sysroot="$butch_prefix" --with-sysroot="$butch_prefix" \
 	|| exit 1
 
 echo "#define __pid_t int" >include/features.h
 make -j$MAKE_THREADS tooldir=$R || exit 1
 make DESTDIR=$TC_PATH install-gas install-ld install-binutils || exit 1
 
+fixdestdir
+
 cd $TC_PATH/bin/
 rm -f ld
 ln -sf ld.bfd ld
 
+#prevent custom buildscripts from messing with the toolchain
+exit 0
 
