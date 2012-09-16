@@ -31,7 +31,6 @@ CC="$CC -static -D_GNU_SOURCE -L$R/lib -I$R/include -D_LARGEFILE64_SOURCE" ./con
 	--with-build-sysroot="$butch_prefix" --with-sysroot="$butch_prefix" \
 	|| exit 1
 
-echo "#define __pid_t int" >include/features.h
 make -j$MAKE_THREADS tooldir=$R || exit 1
 make DESTDIR=$TC_PATH install-gas install-ld install-binutils || exit 1
 

@@ -16,5 +16,6 @@ pango
 patch -p1 < "$K/openbox-git.patch"
 CFLAGS=-D_GNU_SOURCE LDFLAGS=-lXext ./configure -C \
   --prefix="$butch_prefix" --disable-nls || exit 1
+echo true > missing
 make -j$MAKE_THREADS || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

@@ -1,0 +1,17 @@
+[mirrors]
+http://ftp.de.debian.org/debian/pool/main/libc/libcap2/libcap2_2.22.orig.tar.gz
+
+[main]
+filesize=67432
+sha512=b66cd3e233cab9c35334c3ed824f2b6207a46b7320be0a29f5290a32cbf4ea7c4fbf22125541cfa25fdd7466d9c14373ff5f68b53fe44036af6763d3ff1cb398
+tardir=libcap-2.22
+
+[deps]
+attr
+
+[build]
+#patch -p1 < "$K/some.patch" || exit 1
+#CFLAGS=-D_GNU_SOURCE ./configure -C --prefix="$butch_prefix" || exit 1
+make -j$MAKE_THREADS prefix="$butch_prefix" lib=lib CFLAGS=-D_GNU_SOURCE LDFLAGS=-Wl,-rpath-link="$butch_prefix"/lib || exit 1
+sed -i 's@$(SBINDIR)/setcap cap_setfcap=@LD_LIBRARY_PATH=$(LIBDIR) $(SBINDIR)/setcap cap_setfcap=@' progs/Makefile
+make FAKEROOT="$butch_install_dir" prefix="$butch_prefix" lib=lib install || exit 1
