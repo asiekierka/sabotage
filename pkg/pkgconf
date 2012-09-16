@@ -1,13 +1,13 @@
 [deps]
 musl
 
-[main]
-filesize=81740
-sha512=74854d2d1f4e76d34f325777c60ed456323ebdb1e1e806a89e0ac87959bc5dda8918ca775da563f9eb7f542cdb42787c96b4d346451ff835f84e1dec4e9b4345
-
 [mirrors]
-http://nenolod.net/~nenolod/distfiles/pkgconf-0.8.1.tar.bz2
-http://tortois.es/~nenolod/distfiles/pkgconf-0.8.1.tar.bz2
+http://tortois.es/~nenolod/distfiles/pkgconf-0.8.9.tar.bz2
+http://nenolod.net/~nenolod/distfiles/pkgconf-0.8.9.tar.bz2
+
+[main]
+filesize=80211
+sha512=3acb571412dedc2587203ed05537ce3adbaa64f2fab4f561da9824917c15e2ea771db7525f9a026261086f4ae196c3a5183e1bb3d33e14fdd779fbe74e6215c3
 
 [build]
 CFLAGS="-D_GNU_SOURCE -D_BSD_SOURCE" ./configure -C --prefix="$butch_prefix" || exit 1

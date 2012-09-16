@@ -4,6 +4,7 @@ autoconf
 automake
 bison
 busybox-man
+capchroot
 curl
 diffutils
 expat

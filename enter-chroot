@@ -8,7 +8,6 @@ if [ "$uid" != "0" ]; then
 fi
 
 export H="$PWD"
-. "$H"/config
 
 mkdir -p "$R"/src/tarballs
 

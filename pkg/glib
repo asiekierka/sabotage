@@ -18,5 +18,9 @@ patch -p1 < "$K/glib-skip-tests.patch" || exit 1
 this_dir="$PWD"
 CFLAGS="-D_GNU_SOURCE -D_BSD_SOURCE -Dloff_t=off_t" ./configure -C --prefix="$butch_prefix" --disable-modular-tests --disable-selinux --disable-fam || exit 1
 echo '#include <string.h>' >> config.h
+
+# skip over bogus "missing" checks that only waste time or cause build errors
+echo true > missing
+
 make -j$MAKE_THREADS DESTDIR="$butch_install_dir" LDFLAGS="-Wl,-rpath-link=$this_dir/gthread/.libs/ -Wl,-rpath-link=$this_dir/gmodule/.libs/" || exit 1
 make DESTDIR="$butch_install_dir" install || exit 1

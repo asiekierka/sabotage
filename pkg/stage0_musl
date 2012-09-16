@@ -2,17 +2,19 @@
 stage0_gcc3
 
 [mirrors]
-http://www.etalabs.net/musl/releases/musl-0.9.4.tar.gz
+http://www.etalabs.net/musl/releases/musl-0.9.6.tar.gz
+http://www.musl-libc.org/releases/musl-0.9.6.tar.gz
+
 [main]
-filesize=668620
-sha512=9a8d95103fac4fb50f2f0670556f96f4e214a6f2a57a438d4c5cc05324b7e1218327513615bf4c963a7151edffb7a09e439c15e3abe9a223798509406afb497b
+filesize=681467
+sha512=58aeb82a325de6c5eeab6236f9abc62f18b0b3633408f004964a5bae24eba42833f09910c0b8c18bd0cfb99f83832690e33dfb1e87bb5483fad7c1821787dad8
 
 [build]
 cp "$K/musl.config.mak" config.mak
 [ -z "$butch_prefix" ] && butch_prefix=/
 sed -i "s,#BUTCH_PREFIX#,$butch_prefix," config.mak
 
-patch -p1 < "$K/musl-0.9.4-cumulative.patch" || exit 1
+#patch -p1 < "$K/musl-0.9.4-cumulative.patch" || exit 1
 
 #disable building shared libs. the mere presence of libc.so messes up stuff.
 #we do not want anything in stage0 to be dynamically linked.
